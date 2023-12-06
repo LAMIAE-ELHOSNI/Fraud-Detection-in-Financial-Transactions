@@ -15,14 +15,15 @@ if transactions.status_code == 200:
         
         # Create the table
         table_creation_query = """
-        CREATE TABLE IF NOT EXISTS transactions_data.customers (
-            account_history STRING,
-            avg_transaction_value DOUBLE,
-            customer_id STRING,
-            age INT,
-            location STRING
-        )
-        """
+            CREATE TABLE IF NOT EXISTS transactions_data.customers (
+                account_history ARRAY<STRING>,
+                avg_transaction_value DOUBLE,
+                customer_id STRING,
+                age INT,
+                location STRING
+            )
+            """
+
         cursor.execute(table_creation_query)
 
         account_history_string = ",".join(data["account_history"])
@@ -31,26 +32,21 @@ if transactions.status_code == 200:
         insert_query = '''
         INSERT INTO transactions_data.customers
         VALUES ('{a}',
-        '{b}',
-        '{c}',
-        {d},
-        '{e}')
+        '{avg}',
+        '{c_id}',
+        {age},
+        '{loc}')
         '''.format(
             a = account_history_string,
-            b = data['behavioral_patterns']['avg_transaction_value'],
-            c = data['customer_id'],
-            d = data['demographics']['age'],
-            e = data['demographics']['location']
+            avg = data['behavioral_patterns']['avg_transaction_value'],
+            c_id = data['customer_id'],
+            age = data['demographics']['age'],
+            loc = data['demographics']['location']
         )
         # print(insert_query)
         cursor.execute(insert_query)
         # Commit the transaction
         connection.commit()
-
-        # Fetch and print the inserted data
-        cursor.execute('SELECT * FROM transactions_data.customers')
-        print(cursor.fetchall())
-
         # Close the cursor and connection
         cursor.close()
         connection.close()
