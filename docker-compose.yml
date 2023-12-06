@@ -62,3 +62,13 @@ services:
       - ./metastore-postgresql/postgresql/data:/var/lib/postgresql/data
     depends_on:
       - datanode
+
+
+  sleek-airflow:
+    image: sleek-airflow:latest
+    container_name: sleek-airflow
+    volumes:
+      - ./airflow:/opt/airflow
+    ports:
+      - "8081:8080"
+    command: webserver  # Specify the command here
